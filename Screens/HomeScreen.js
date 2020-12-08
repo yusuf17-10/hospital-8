@@ -107,9 +107,9 @@ const styles = StyleSheet.create({
   imageIcon: {
     width: 300,
     height: 150,
-    marginLeft: 20,
     justifyContent: 'center',
-    marginTop: 10,
-    borderRadius: 20,
+    alignSelf:"center",
+    alignItems:"center",
+    borderRadius: 5,
   },
 });

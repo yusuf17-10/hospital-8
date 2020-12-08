@@ -20,10 +20,10 @@ export default class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      email: '',
+      emailId: '',
       password: '',
-      isModalVisible: 'false',
-      firstname: '',
+      isModalVisible: false,
+      firstName: '',
       lastname: '',
       address: '',
       phone: '',
@@ -31,7 +31,10 @@ export default class App extends React.Component {
     };
   }
 
-  userSignUp = (username, password) => {
+  userSignUp = (username, password,confirmPassword) => {
+    if(password!==confirmPassword){
+      Alert.alert("Password Doesn't Match")
+    }else{
     firebase
       .auth()
       .createUserWithEmailAndPassword(username, password)
@@ -42,6 +45,14 @@ export default class App extends React.Component {
         var errorMessage = error.message;
         return Alert.alert(errorMessage);
       });
+      db.collection('user').add({
+        firstName: this.state.firstName,
+        lastName: this.state.lastName,
+        phone: this.state.phone,
+        address: this.state.address,
+        emailId:this.state.emailId
+      });
+    }
   };
 
   userLogin = (username, password) => {
@@ -56,12 +67,6 @@ export default class App extends React.Component {
         return Alert.alert(errorMessage);
       });
 
-    db.collection('user').add({
-      first_name: this.state.firstname,
-      last_name: this.state.lastname,
-      phone: this.state.phone,
-      address: this.state.address,
-    });
   };
 
   showModal = () => {
@@ -73,22 +78,24 @@ export default class App extends React.Component {
         <View>
           <ScrollView>
             <KeyboardAvoidingView>
-              <Text>Registration</Text>
+              <Text style={{alignItems:"center",alignSelf:"center",backgroundColor:"pink",fontSize:20}}>Registration</Text>
               <TextInput
                 style={styles.input}
-                placeholder={'FirstName'}
+                placeholder={'firstName'}
                 maxLength={8}
                 onChangeText={(text) => {
-                  this.setState({ firstname: text });
+                  this.setState({ firstName: text });
                 }}
+                value={this.state.firstName}
               />
               <TextInput
                 style={styles.input}
                 placeholder={'LastName'}
                 maxLength={8}
                 onChangeText={(text) => {
-                  this.setState({ lastname: text });
+                  this.setState({ lastName: text });
                 }}
+                value={this.state.lastName}
               />
               <TextInput
                 style={styles.input}
@@ -97,6 +104,8 @@ export default class App extends React.Component {
                 onChangeText={(text) => {
                   this.setState({ address: text });
                 }}
+                value={this.state.address}
+
               />
               <TextInput
                 style={styles.input}
@@ -106,6 +115,29 @@ export default class App extends React.Component {
                 onChangeText={(text) => {
                   this.setState({ phone: text });
                 }}
+                value={this.state.phone}
+
+              />
+
+        <TextInput
+          keyboardType={"email-address"}
+          style={styles.input}
+          placeholder="Email"
+          onChangeText={(text) => {
+            this.setState({ emailId: text });
+          }}
+          value={this.state.emailId}
+        />
+
+             <TextInput
+                style={styles.input}
+                placeholder={'password'}
+                secureTextEntry={true}
+                onChangeText={(text) => {
+                  this.setState({ password: text });
+                }}
+                value={this.state.password}
+
               />
 
               <TextInput
@@ -115,6 +147,8 @@ export default class App extends React.Component {
                 onChangeText={(text) => {
                   this.setState({ confirmPassword: text });
                 }}
+                value={this.state.confirmPassword}
+
               />
 
               <TouchableOpacity
@@ -145,24 +179,27 @@ export default class App extends React.Component {
 
   render() {
     return (
-      <View style={{backgroundColor:"#FED8B1"}}>
+      <View style={{backgroundColor:"#FED8B1",alignSelf:"center"}}>
        {this.showModal()}
         <Image
           style={styles.imageIcon}
-          source={require('../assets/giphy.gif')}
+          source={require('../assets/AnimationBandeauHaut_6E2BDD7_FR.gif')}
         />
         <Text style={styles.text1}>Enter Your Email And Password To Login</Text>
+        <Text style={styles.text3}>(OR)</Text>
 
         <Text style={styles.text2}>
           If You Are New User Then Type Email And Password Then Click On SignUp
         </Text>
         <TextInput
+                  keyboardType={"email-address"}
+
           style={styles.input}
           placeholder="Email"
           onChangeText={(text) => {
-            this.setState({ email: text });
+            this.setState({ emailId: text });
           }}
-          value={this.state.email}
+          value={this.state.emailId}
         />
 
         <TextInput
@@ -177,7 +214,7 @@ export default class App extends React.Component {
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            this.userLogin(this.state.email, this.state.password);
+            this.userLogin(this.state.emailId, this.state.password);
           }}>
           <Text>Login</Text>
         </TouchableOpacity>
@@ -198,12 +235,12 @@ export default class App extends React.Component {
 
 const styles = StyleSheet.create({
   input: {
-    backgroundColor: 'lightpink',
+    backgroundColor: 'lightgreen',
     alignItems: 'center',
     alignSelf: 'center',
     justifyContent: 'center',
     borderRadius: 2,
-    marginTop: 10,
+    marginTop: 40,
     borderWidth: 3,
     width: 200,
     height: 50,
@@ -214,27 +251,29 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'center',
     borderRadius: 100,
-    marginTop: 10,
+    marginTop: 20,
     borderWidth: 2,
     width: 150,
     height: 50,
   },
 
   imageIcon: {
-    width: 300,
-    height: 150,
-    marginLeft: 20,
+    width: 400,
+    height: 200,
     justifyContent: 'center',
-    marginTop: 10,
-    borderRadius: 5,
+    alignItems:"center",
+    alignSelf:"center",
+    borderRadius: 10,
+    marginTop:20
   },
   text1: {
     textAlign: 'center',
     fontSize: 20,
     fontWeight: 'bold',
     color: 'blue',
-    marginTop: 2,
+    marginTop: 20,
     fontStyle: 'italic',
+
   },
 
   text2: {
@@ -242,7 +281,15 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: 'bold',
     color: 'red',
-    marginTop: 2,
+    marginTop: 20,
+    fontStyle: 'italic',
+  },
+  text3: {
+    textAlign: 'center',
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: 'red',
+    marginTop: 20,
     fontStyle: 'italic',
   },
 });
