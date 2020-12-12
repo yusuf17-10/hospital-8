@@ -10,15 +10,31 @@ import {
   Modal
 } from 'react-native';
 import { Header } from 'react-native-elements';
+import db from '../config';
+import firebase from "firebase";
+
 
 export default class HomeScreen extends React.Component {
   constructor() {
     super();
     this.state = {
       text: '',
+      searchList:[]
+
       
     };
   }
+
+  searchHospitals=async()=>{
+    var diseaseName = this.state.text.toLowerCase().trim()
+    var hospitals = await db.collection("diseases").where("diseaseName","==",diseaseName).get()
+    hospitals.forEach(doc=>{
+      this.setState({
+        searchList:[...this.state.searchList,doc.data()]
+      })
+    })
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -57,10 +73,17 @@ export default class HomeScreen extends React.Component {
           value={this.state.text}
         />
         <TouchableOpacity style={styles.goButton} onPress={() => {
-          this.props.navigation.navigate("MapScreen")
+          //this.props.navigation.navigate("MapScreen")
+          this.searchHospitals()
+
         }}>
           <Text style={styles.buttonText}>Next</Text>
         </TouchableOpacity>
+        {
+          this.state.searchList.map(disease=>{
+            Alert.alert(disease.diseaseName)
+          })
+        }
       </View>
     );
   }

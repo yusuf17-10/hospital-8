@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Text,View,Dimensions,Alert,StyleSheet} from "react-native";
-import MapView,{Marker} from "react-native-maps";
+import MapView,{Callout, Marker} from "react-native-maps";
 import db from '../config';
 import firebase from "firebase";
 
@@ -28,9 +28,9 @@ export default class MapScreen extends React.Component{
         })
     }
 
-    getHospitals=()=>{
-        var hospital = db.collection("hospital")
-        .onSnapshot((snapshot)=>{
+    getHospitals=async()=>{
+        var hospital = await db.collection("hospital")
+        hospital.onSnapshot((snapshot)=>{
             var hospitalList = snapshot.docs.map(document => document.data())
             this.setState({
                 hospitalList:hospitalList
@@ -50,21 +50,39 @@ export default class MapScreen extends React.Component{
                          style={{width:Dimensions.get("window").width,height:Dimensions.get("window").height}}
                             initialRegion={{latitude:this.state.latitude,longitude:this.state.longitude,longitudeDelta:0.01,latitudeDelta:0.01}}
                          >
-                             <Marker
+
+                             <Marker.Animated
+                             pinColor={"red"}
 
                              coordinate={{latitude:this.state.latitude,longitude:this.state.longitude}}
                              
                              />
-                         </MapView>
-                         {
-                             this.state.hospitalList.map((hospital)=>{
-                                 <MapView.Marker
-                                 title={hospital.hospitalName}
-                                 coordinate={{latitude:hospital.position.longitude,longitude:hospital.position.latitude}}
-
-                                 />
-                             })
+                               {
+                                   this.state.hospitalList.length !== 0 ? 
+                    (
+                                    this.state.hospitalList.map((hospital)=>{
+                                        return(
+                                        
+                                        <Marker.Animated
+                                        pinColor={"blue"}
+                                        title={hospital.name}
+                                        coordinate={{latitude:hospital.position.latitude,longitude:hospital.position.longitude}}
+                                        >
+                                            <Callout tooltip>
+                                               
+                                                    <View style={{backgroundColor:"white",padding:10}}>
+                                                    <Text>{hospital.name}</Text>
+                                                    </View>
+                                                
+                                            </Callout>
+                                        </Marker.Animated>
+                                        )
+                                    })
+                    ):(Alert.alert("Reading the Position"))
+                            
                          }
+                         </MapView>
+                       
                      </View> 
                     ):(Alert.alert("Reading the Position"))
                 }
