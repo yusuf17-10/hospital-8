@@ -19,13 +19,26 @@ export default class HomeScreen extends React.Component {
     super();
     this.state = {
       text: '',
-      searchList:[]
-
+      searchList:[],
+      hospitalList:[]
       
     };
   }
 
+
   searchHospitals=async()=>{
+    this.state.searchList.map(async(item)=>{
+      var hospitals = await db.collection("hospital").where("hospitalId","==",item.hospitalId).get()
+      hospitals.forEach(doc=>{
+        this.setState({
+          hospitalList:[...this.state.hospitalList,doc.data()]
+        })
+      })
+    })
+   
+  }
+
+  searchDiseases=async()=>{
     var diseaseName = this.state.text.toLowerCase().trim()
     var hospitals = await db.collection("diseases").where("diseaseName","==",diseaseName).get()
     hospitals.forEach(doc=>{
@@ -33,6 +46,7 @@ export default class HomeScreen extends React.Component {
         searchList:[...this.state.searchList,doc.data()]
       })
     })
+
   }
 
   render() {
@@ -73,17 +87,21 @@ export default class HomeScreen extends React.Component {
           value={this.state.text}
         />
         <TouchableOpacity style={styles.goButton} onPress={() => {
-          //this.props.navigation.navigate("MapScreen")
+         
+          this.searchDiseases()
           this.searchHospitals()
-
+          this.state.hospitalList.map(item => {
+            Alert.alert(item.name)
+          })
+          this.setState({
+          hospitalList:[],
+            searchList:[]
+          })
+          this.props.navigation.navigate("MapScreen",{color:1})
         }}>
           <Text style={styles.buttonText}>Next</Text>
         </TouchableOpacity>
-        {
-          this.state.searchList.map(disease=>{
-            Alert.alert(disease.diseaseName)
-          })
-        }
+        
       </View>
     );
   }

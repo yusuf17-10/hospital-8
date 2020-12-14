@@ -6,8 +6,8 @@ import firebase from "firebase";
 
 
 export default class MapScreen extends React.Component{
-    constructor(){
-        super();
+    constructor(props){
+        super(props);
         this.state={
             longitude:"",
             latitude:"",
@@ -15,10 +15,14 @@ export default class MapScreen extends React.Component{
         }
     }
 
+    
 
 
     componentDidMount(){
-        this.getHospitals();
+        //this.getHospitals();
+        //this.state.hospitalList.map(item => {Alert.alert(item.position.latitude)})
+        Alert.alert(this.props.navigation.navigate("color")
+        )
         navigator.geolocation.getCurrentPosition((position)=>{
             this.setState({
                 longitude:position.coords.longitude,
@@ -28,7 +32,7 @@ export default class MapScreen extends React.Component{
         })
     }
 
-    getHospitals=async()=>{
+    /*getHospitals=async()=>{
         var hospital = await db.collection("hospital")
         hospital.onSnapshot((snapshot)=>{
             var hospitalList = snapshot.docs.map(document => document.data())
@@ -36,7 +40,7 @@ export default class MapScreen extends React.Component{
                 hospitalList:hospitalList
             })
         })
-    }
+    }*/
 
     render(){
         return(
