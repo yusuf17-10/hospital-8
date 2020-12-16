@@ -11,6 +11,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Image,
+  image
 } from 'react-native';
 import firebase from 'firebase';
 import db from '../config';
@@ -258,6 +259,8 @@ const styles = StyleSheet.create({
   },
 
   imageIcon: {
+   // width: "100%",
+    //height: "30%",
     width: 400,
     height: 200,
     justifyContent: 'center',

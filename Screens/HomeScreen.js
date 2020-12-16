@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   Image,
   Alert,
-  Modal
+  Modal,
+  ImageBackground
 } from 'react-native';
 import { Header } from 'react-native-elements';
 import db from '../config';
@@ -70,9 +71,9 @@ export default class HomeScreen extends React.Component {
           }}
         />
 
-        <Image
+        <ImageBackground
           style={styles.imageIcon}
-          source={require('../assets/dribbble_2.gif')}
+          source={require('../assets/bg2.jpg')}
         />
 
         <Text style={styles.text}>
